@@ -28,6 +28,7 @@ concurrency:
 permissions:
   contents: read
 
+
 jobs:
   build:
     runs-on: [self-hosted, linux, centos]
