@@ -47,74 +47,42 @@ jobs:
       with:
         submodules: true
 
+    - name: setup-sdk
+      run: |
+        cd /data/action/osd
+        wget -q https://repo.huaweicloud.com/harmonyos/os/4.1.1-Release/ohos-sdk-windows_linux-public.tar.gz
+        tar -xf ohos-sdk-windows_linux-public.tar.gz
+        cd ohos-sdk/linux
+        unzip -q native-linux-x64-4.1.7.8-Release.zip
+
     - name: armeabi-v7a
       run: |
         mkdir build-armeabi-v7a && cd build-armeabi-v7a
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="armeabi-v7a" ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
-
-    - name: Upload armeabi-v7a artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: armeabi-v7a
-        path: build-armeabi-v7a/
-
     - name: arm64-v8a
       run: |
         mkdir build-arm64-v8a && cd build-arm64-v8a
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="arm64-v8a" ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
-
-    - name: Upload arm64-v8a artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: arm64-v8a
-        path: build-arm64-v8a/
-
     - name: x86_64
       run: |
         mkdir build-x86_64 && cd build-x86_64
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="x86_64" ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
 
-    - name: Upload x86_64 artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: x86_64
-        path: build-x86_64/
-
     - name: armeabi-v7a-shared
       run: |
         mkdir build-armeabi-v7a-shared && cd build-armeabi-v7a-shared
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="armeabi-v7a" -DNCNN_SHARED_LIB=ON ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
-
-    - name: Upload armeabi-v7a-shared artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: armeabi-v7a-shared
-        path: build-armeabi-v7a-shared/
-
     - name: arm64-v8a-shared
       run: |
         mkdir build-arm64-v8a-shared && cd build-arm64-v8a-shared
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="arm64-v8a" -DNCNN_SHARED_LIB=ON ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
-
-    - name: Upload arm64-v8a-shared artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: arm64-v8a-shared
-        path: build-arm64-v8a-shared/
-
     - name: x86_64-shared
       run: |
         mkdir build-x86_64-shared && cd build-x86_64-shared
         ${{ env.OHOS_NDK_CMAKE }} ${{ env.NCNN_CMAKE_OPTIONS }} -DOHOS_ARCH="x86_64" -DNCNN_SHARED_LIB=ON ..
         ${{ env.OHOS_NDK_CMAKE }} --build . -j 4
-
-    - name: Upload x86_64-shared artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: x86_64-shared
-        path: build-x86_64-shared/
