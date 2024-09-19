@@ -29,9 +29,10 @@ concurrency:
 permissions:
   contents: read
 
+
 jobs:
   build:
-    runs-on: [win]
+    runs-on: win
 
     env:
       OHOS_NDK_HOME: /data/action/osd/ohos-sdk/linux/native
