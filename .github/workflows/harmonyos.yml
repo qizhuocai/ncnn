@@ -29,71 +29,50 @@ jobs:
         -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/ohos-sdk/linux/native/build/cmake/ohos.toolchain.cmake \
         -DCMAKE_INSTALL_PREFIX=install \
         -DCMAKE_BUILD_TYPE=Release
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: ndk-fix-debug
+      - name: Download OHOS SDK
         run: |
           wget https://repo.huaweicloud.com/harmonyos/os/4.0-Release/ohos-sdk-windows_linux-public.tar.gz
           tar -xf ohos-sdk-windows_linux-public.tar.gz
           cd ohos-sdk/linux
           unzip -q native-linux-x64-4.0.10.13-Release.zip
-
-      - name: build-armeabi-v7a
+      
+      - name: Build for armeabi-v7a
         run: |
           mkdir build-armeabi-v7a && cd build-armeabi-v7a
-          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="armeabi-v7a" ${{ github.workspace }} 
+          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="armeabi-v7a" ${{ github.workspace }}
           ${{ env.OHOS_NDK_CMAKE }} --build . -j $(nproc)
           ${{ env.OHOS_NDK_CMAKE }} --build . --target install
+          cd ..
 
-      - name: build-arm64-v8a
+      - name: Build for arm64-v8a
         run: |
           mkdir build-arm64-v8a && cd build-arm64-v8a
-          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="arm64-v8a" ${{ github.workspace }} 
+          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="arm64-v8a" ${{ github.workspace }}
           ${{ env.OHOS_NDK_CMAKE }} --build . -j $(nproc)
           ${{ env.OHOS_NDK_CMAKE }} --build . --target install
+          cd ..
 
-      - name: build-x86_64
+      - name: Build for x86_64
         run: |
           mkdir build-x86_64 && cd build-x86_64
-          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="x86_64" ${{ github.workspace }} 
+          ${{ env.OHOS_NDK_CMAKE }} ${{ env.COMMON_CMAKE_OPTIONS }} -DOHOS_ARCH="x86_64" ${{ github.workspace }}
           ${{ env.OHOS_NDK_CMAKE }} --build . -j $(nproc)
           ${{ env.OHOS_NDK_CMAKE }} --build . --target install
+          cd ..
 
-      - name: package
+      - name: Package
         run: |
-          mkdir ncnn-package
-          mkdir ncnn-package/x86_64
-          mkdir ncnn-package/armeabi-v7a
-          mkdir ncnn-package/arm64-v8a
+          mkdir -p ncnn-package/x86_64 ncnn-package/armeabi-v7a ncnn-package/arm64-v8a
           cp -rf build-x86_64/install/* ncnn-package/x86_64/
           cp -rf build-armeabi-v7a/install/* ncnn-package/armeabi-v7a/
           cp -rf build-arm64-v8a/install/* ncnn-package/arm64-v8a/
           zip -r ncnn-package.zip ncnn-package
 
-      - name: upload
+      - name: Upload Package
         uses: actions/upload-artifact@v4
         with:
           name: ncnn-package
           path: ncnn-package.zip
-
-  release:
-    permissions:
-      contents: write
-    needs: harmonyos
-    runs-on: ubuntu-latest
-    steps:
-      - name: download
-        uses: actions/download-artifact@v4
-        with:
-          name: ncnn-package
-          path: artifacts
-
-      - name: create-release
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: 'v1.0' # 你可以根据需要设置标签
-          name: Release v1.0
-          files: artifacts/*.zip
