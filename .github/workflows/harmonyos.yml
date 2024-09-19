@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: [linux, centos]
+    runs-on: ubuntu-latest
 
     env:
       OHOS_NDK_HOME: /data/action/osd/ohos-sdk/linux/native
