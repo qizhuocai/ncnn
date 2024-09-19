@@ -1,34 +1,22 @@
-name: harmonyos
+name: harmonyos-ncnn
 on:
   push:
     branches:
       - master
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
-  IOS_DEPLOYMENT_TARGET: '13.0'
-  MAC_DEPLOYMENT_TARGET: '11.0'
-  MAC_CATALYST_DEPLOYMENT_TARGET: '13.1'
-  WATCHOS_DEPLOYMENT_TARGET: '6.0'
-  TVOS_DEPLOYMENT_TARGET: '11.0'
-  VISIONOS_DEPLOYMENT_TARGET: '1.0'
-  ENABLE_BITCODE: OFF
-  ENABLE_ARC: OFF
-  ENABLE_VISIBILITY: OFF
-  EMSCRIPTEN_VERSION: 3.1.28
+  OHOS_NDK_CMAKE: ${{ github.workspace }}/ohos-sdk/linux/native/build-tools/cmake/bin/cmake
+  COMMON_CMAKE_OPTIONS: |
+    -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/ohos-sdk/linux/native/build/cmake/ohos.toolchain.cmake \
+    -DCMAKE_INSTALL_PREFIX=install \
+    -DCMAKE_BUILD_TYPE=Release
 
 permissions:
   contents: read
 
 jobs:
-  harmonyos:
+  build:
     runs-on: ubuntu-latest
-    env:
-      OHOS_NDK_CMAKE: ${{ github.workspace }}/ohos-sdk/linux/native/build-tools/cmake/bin/cmake
-      COMMON_CMAKE_OPTIONS: |
-        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/ohos-sdk/linux/native/build/cmake/ohos.toolchain.cmake \
-        -DCMAKE_INSTALL_PREFIX=install \
-        -DCMAKE_BUILD_TYPE=Release
     steps:
       - uses: actions/checkout@v4
 
